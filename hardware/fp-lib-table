@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "dc34-sao")(type "KiCad")(uri "${KIPRJMOD}/lib/dc34-sao.pretty")(options "")(descr "DC34 Meme TV SAO custom footprints"))
+)

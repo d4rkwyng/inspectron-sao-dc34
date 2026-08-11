@@ -1,0 +1,38 @@
+{
+  // INSPECTRON 34 — public puzzle site, Cloudflare Workers Static Assets.
+  //
+  // This is an ASSETS-ONLY Worker: no server code, Cloudflare serves the
+  // files in ../site directly from its edge. `wrangler deploy` uploads ONLY
+  // the `assets.directory` below — it does NOT touch sitegen/ (the private
+  // answer table), so the deploy path cannot leak answers.
+  //
+  // Deploy from the repo root:
+  //     npx wrangler deploy --config deploy/wrangler.jsonc
+  // First run prompts a Cloudflare login. You immediately get a URL:
+  //     https://<name>.<your-account>.workers.dev
+  // Add a custom domain later in the dashboard (Workers > this worker >
+  // Settings > Domains & Routes) or via `routes` below.
+  //
+  // BEFORE EVERY DEPLOY, run the leak gate against site/:
+  //     python3 sitegen/check_no_answers.py   # must print RESULT: PASS
+
+  "name": "inspectron-broadcast-authority",
+  "compatibility_date": "2026-08-01",
+
+  "assets": {
+    // Path is relative to this config file (deploy/), so ../site.
+    "directory": "../site",
+    // Serve site/404.html for any unknown path (matches the GitHub-Pages
+    // behavior the 404.html was written for).
+    "not_found_handling": "404-page",
+    // Static puzzle site: no HTML rewriting, serve paths as authored.
+    "html_handling": "auto-trailing-slash"
+  },
+
+  // Custom domain (registered Aug 4, 2026). Requires the inspectron34.com
+  // zone to be in this Cloudflare account (automatic if registered via
+  // Cloudflare Registrar). `wrangler deploy` binds the route + issues TLS.
+  "routes": [
+    { "pattern": "inspectron34.com", "custom_domain": true }
+  ]
+}

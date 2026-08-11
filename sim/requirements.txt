@@ -1,0 +1,10 @@
+# Desktop simulator deps (runs firmware/code.py unmodified via sim/stubs).
+# Recreate: python3 -m venv sim/.venv && sim/.venv/bin/pip install -r sim/requirements.txt
+numpy==2.0.2
+pillow==11.3.0
+pygame==2.6.1
+
+# dev/quality-gate tools
+ruff
+pytest
+qrcode

@@ -1,0 +1,25 @@
+.DS_Store
+*.pyc
+__pycache__/
+.ruff_cache/
+.pytest_cache/
+*.kicad_prl
+hardware/*.ses.old
+hardware/freerouting.log
+hardware/erc.txt
+hardware/dc34-sao-backups/
+fp-info-cache
+
+# python virtualenv (disposable — recreate via: python3 -m venv sim/.venv && sim/.venv/bin/pip install -r sim/requirements.txt)
+sim/.venv/
+# sim runtime state (emulated NVM)
+sim/nvm.bin
+*.bin
+
+# VS Code Local History extension cruft
+hardware/.history/
+
+# sim selftest scratch frames
+sim/out/
+firmware/.tools/
+firmware/build/

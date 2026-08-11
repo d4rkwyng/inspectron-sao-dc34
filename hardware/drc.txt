@@ -1,0 +1,26 @@
+** Drc report for dc34-sao.kicad_pcb **
+** Created on 2026-07-16T14:17:23 **
+** Report includes: Errors **
+
+** Found 0 DRC violations **
+
+** Found 2 unconnected pads **
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(125.8000 mm, 125.4375 mm): Pad 22 [VDD] of U1 on B.Cu
+    @(99.0000 mm, 88.0000 mm): Zone 'vdd-back' [VDD] on B.Cu, priority 0
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(99.0000 mm, 88.0000 mm): Zone 'vdd-back' [VDD] on B.Cu, priority 0
+    @(99.0000 mm, 88.0000 mm): Zone 'vdd-back' [VDD] on B.Cu, priority 0
+
+** Found 0 Footprint errors **
+
+** Ignored checks **
+    - Footprint has no courtyard defined
+    - Track endpoint not centered on via
+    - Tuning profile track geometries
+    - Footprint doesn't match symbol's footprint filters
+    - Footprint component type doesn't match footprint pads
+
+** End of Report **

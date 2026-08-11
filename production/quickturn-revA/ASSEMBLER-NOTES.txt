@@ -1,0 +1,38 @@
+INSPECTRON 34 — quick-turn assembly notes (paste into the order "special instructions" box)
+=============================================================================================
+
+QTY: 5 boards, full turnkey (you fabricate the bare board + source parts + assemble).
+
+BOARD (fab):
+- 2-layer FR-4, 1.6 mm, 1 oz copper.
+- Surface finish: ENIG (required — needed for the hand-soldered display flex and the
+  gold look). Please do NOT substitute HASL.
+- Solder mask: matte black preferred. IF matte black adds lead time, green is an
+  acceptable fallback for these units (ENIG is the hard requirement, mask color is not).
+- Silkscreen: white.
+- Min track/space 0.15/0.12 mm, min hole 0.2 mm (all within standard capability).
+
+SOLDER MASK ON U1 (RP2040, QFN-56, 0.4 mm pitch):
+- The pad-to-pad gap is 0.20 mm, so a solder-mask dam between those pins is below
+  matte-black minimum. Please GANG / merge the mask into one opening over the QFN pad
+  rows (web-out the sub-spec slivers). This is expected for a 0.4 mm QFN — do NOT enlarge
+  the pads or alter the land pattern. Stencil/paste volume controls bridging.
+
+ASSEMBLY:
+- Double-sided SMT (parts on both top and bottom — see centroid "Side" column).
+- DO NOT populate J3 (the TFT display). It is intentionally absent from the BOM and
+  centroid; the customer hand-solders the display flex after delivery. Leave the J3 pads
+  bare and clean.
+- J1 is a THROUGH-HOLE 2x3 header: mount on the BACK side, solder from the front. (It is
+  the only THT part.)
+- Do not substitute any part carrying an MPN in the BOM (U1/U2/U3/Q1/Q2/D1/J2/LEDs).
+  R/C passives may be substituted with equivalents (value + size + dielectric as noted).
+- U3 must be the 3.3 V output LDO (ME6211C33). Q2 must be logic-level (fully on at
+  Vgs <= 3 V). Y1 crystal ESR <= 100 ohm.
+
+SHIPPING: fastest domestic (overnight if available). Hard deadline: in hand before Aug 6.
+
+FILES:
+- Gerbers:  dc34-sao-revA-gerbers.zip
+- BOM:      dc34-sao-revA-BOM-jlcpcb.csv
+- Centroid: dc34-sao-revA-positions.csv  (J3 already excluded; columns Ref,Val,Package,PosX,PosY,Rot,Side)

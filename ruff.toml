@@ -1,0 +1,23 @@
+# Quality-gate lint config for INSPECTRON 34 firmware + tooling.
+# Scope is deliberately narrow: on CircuitPython an undefined name or a
+# stray unused import is a real runtime cost/crash, not a style nit. We do
+# NOT enforce formatting/line-length here (the firmware has its own hand-
+# tuned layout); we hunt correctness.
+
+target-version = "py39"          # CircuitPython 10.2.1 ~ py3.9 semantics
+line-length = 100
+
+extend-exclude = [
+  "firmware/build",              # stale generated artifacts
+  "firmware/dist",              # code.py loader stub is `import app` on purpose
+  "sim/stubs",                   # desktop shims, not device code
+]
+
+[lint]
+# F = pyflakes (undefined names, unused imports/vars — the crash class)
+# E9 = syntax errors
+# B = flake8-bugbear subset (likely bugs: mutable defaults, except-pass traps)
+select = ["F", "E9", "B"]
+# The firmware leans on broad `except Exception: pass` for total-function
+# guarantees under memory starvation — that is intentional, not a smell.
+ignore = ["B009", "B010"]

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="About INSPECTRON 34 — a DEF CON 34 CRT-TV SAO and puzzle by @d4rkwyng / mindtricks.io.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27><text y=%2713%27 font-size=%2713%27>&#128250;</text></svg>">
+<title>IBA &mdash; Station Registration</title>
+<style>
+:root {
+  --ph: #3ce22c; --ph-dim: #2a9c20;
+  --amber: #f0b429; --bg: #040704; --panel: rgba(10, 26, 9, .55);
+  --line: #175c12;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg); color: var(--ph);
+  font-family: "Courier New", ui-monospace, Menlo, Consolas, monospace;
+  font-size: 16px; line-height: 1.55; min-height: 100vh;
+  text-shadow: 0 0 7px rgba(60, 226, 44, .35);
+  overflow-x: hidden;
+}
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: 9; pointer-events: none;
+  background: repeating-linear-gradient(to bottom,
+    rgba(0, 0, 0, .28) 0, rgba(0, 0, 0, .28) 1px, transparent 1px, transparent 3px);
+  mix-blend-mode: multiply;
+}
+body::after {
+  content: ""; position: fixed; inset: 0; z-index: 8; pointer-events: none;
+  background-image: url("data:image/png;base64,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");
+  opacity: .05; animation: snowdrift .9s steps(4) infinite;
+}
+@keyframes snowdrift {
+  0% { transform: translate(0, 0); } 25% { transform: translate(-11px, 7px); }
+  50% { transform: translate(9px, -13px); } 75% { transform: translate(-6px, -5px); }
+  100% { transform: translate(0, 0); }
+}
+.tube {
+  max-width: 62rem; margin: 0 auto; padding: 1.6rem 1.2rem 3rem;
+  animation: warmup 1.1s ease-out both;
+}
+@keyframes warmup { from { opacity: 0; filter: brightness(2.4) blur(2px); } }
+a { color: var(--ph); }
+a:hover { background: var(--ph); color: #041104; text-shadow: none; }
+h1, h2, h3 { font-weight: 700; letter-spacing: .12em; }
+h1 { font-size: 1.45rem; margin: .3rem 0; text-transform: uppercase; }
+h2 { font-size: 1.05rem; color: var(--ph); text-transform: uppercase; }
+.masthead { text-align: center; border-bottom: 3px double var(--line); padding-bottom: 1.1rem; }
+.masthead img.seal { width: 122px; height: 122px; image-rendering: auto; }
+.tagline { letter-spacing: .38em; color: var(--ph-dim); text-transform: uppercase; font-size: .8rem; }
+.rule { border: 0; border-top: 1px dashed var(--line); margin: 1.4rem 0; }
+.doc {
+  border: 1px solid var(--line); background: var(--panel);
+  padding: 1.1rem 1.3rem; margin: 1.3rem 0; position: relative;
+}
+.doc-head {
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: .4rem;
+  border-bottom: 1px solid var(--line); padding-bottom: .5rem; margin-bottom: .9rem;
+  font-size: .78rem; letter-spacing: .18em; color: var(--ph-dim); text-transform: uppercase;
+}
+.stamp {
+  display: inline-block; border: 2px solid var(--amber); color: var(--amber);
+  text-shadow: 0 0 6px rgba(240, 180, 41, .5); padding: .1rem .55rem;
+  transform: rotate(-2deg); letter-spacing: .22em; font-size: .74rem;
+  text-transform: uppercase;
+}
+.stamp.green { border-color: var(--ph-dim); color: var(--ph); }
+pre.flimsy {
+  background: rgba(0, 0, 0, .45); border-left: 3px solid var(--line);
+  padding: .8rem 1rem; overflow-x: auto; font-size: .92rem; line-height: 1.5;
+  white-space: pre;
+}
+.transcript { color: var(--ph-dim); font-size: .92rem; }
+.transcript em { color: var(--ph); font-style: normal; }
+img.exhibit { display: block; max-width: 100%; height: auto; margin: 0 auto;
+  border: 1px solid var(--line); }
+img.pixel { image-rendering: pixelated; width: min(20rem, 88%); }
+audio { width: 100%; margin: .6rem 0 .2rem; filter: sepia(1) hue-rotate(58deg) saturate(3.2); }
+.dl { font-size: .85rem; letter-spacing: .06em; }
+.grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(16.5rem, 1fr));
+  gap: .9rem; margin-top: 1.2rem;
+}
+a.case {
+  display: block; border: 1px solid var(--line); background: var(--panel);
+  padding: .8rem .9rem; text-decoration: none; min-height: 9.5rem;
+}
+a.case:hover { background: rgba(60, 226, 44, .12); color: var(--ph); }
+a.case:hover .cname { text-decoration: underline; }
+.cno { font-size: .72rem; letter-spacing: .22em; color: var(--ph-dim); }
+.cname { display: block; font-weight: 700; letter-spacing: .08em; margin: .35rem 0;
+  text-transform: uppercase; }
+.cmeta { font-size: .74rem; color: var(--ph-dim); letter-spacing: .1em; }
+.glyph { color: var(--amber); text-shadow: 0 0 5px rgba(240, 180, 41, .45);
+  letter-spacing: .18em; }
+.teaser { font-size: .84rem; color: var(--ph-dim); margin-top: .45rem; }
+.start { border-color: var(--amber); }
+.start .cno::after { content: " · START HERE"; color: var(--amber); }
+.notice { border: 1px dashed var(--amber); color: var(--amber); padding: .6rem .9rem;
+  font-size: .82rem; letter-spacing: .08em; text-shadow: 0 0 6px rgba(240, 180, 41, .4); }
+.bigconv {
+  border: 2px solid var(--ph); padding: .9rem 1.1rem; margin: 1.3rem 0;
+  font-size: 1.02rem; letter-spacing: .04em; background: rgba(0, 0, 0, .5);
+}
+.bigconv b { color: var(--amber); text-shadow: 0 0 6px rgba(240, 180, 41, .4); }
+.glitch { animation: glitchpos 2.4s steps(2) infinite; }
+@keyframes glitchpos {
+  0%, 88% { transform: none; opacity: 1; }
+  90% { transform: translate(-4px, 1px) skewX(3deg); opacity: .7; }
+  93% { transform: translate(5px, -2px); opacity: 1; }
+  96% { transform: translate(-2px, 0) skewX(-4deg); opacity: .5; }
+}
+.noseal {
+  width: 122px; height: 122px; margin: 0 auto; border: 3px double var(--line);
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  color: var(--ph-dim); font-size: .68rem; letter-spacing: .18em;
+  text-transform: uppercase;
+}
+footer {
+  margin-top: 2.4rem; border-top: 3px double var(--line); padding-top: 1rem;
+  font-size: .78rem; color: var(--ph-dim); letter-spacing: .08em;
+}
+footer .conv { text-transform: uppercase; }
+.smallprint { font-size: .78rem; color: var(--ph-dim); margin-top: .8rem; }
+.backlink { letter-spacing: .18em; text-transform: uppercase; font-size: .8rem; }
+.centered { text-align: center; }
+@media (max-width: 40rem) {
+  h1 { font-size: 1.2rem; }
+  .tagline { letter-spacing: .22em; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, body::before, body::after { animation: none !important; }
+  .tube { animation: none; opacity: 1; filter: none; }
+}
+</style>
+</head>
+<body>
+<div class="tube">
+<header class="masthead">
+  <img class="seal" src="assets/seal.png" alt="Circular seal of the INSPECTRON Broadcast Authority: a CRT television with antenna">
+  <h1>Station Registration</h1>
+  <p class="tagline">Who Runs This Band</p>
+</header>
+<div class="doc">
+  <div class="doc-head"><span>Colophon &middot; for the record</span><span class="stamp green">On file</span></div>
+  <p>The INSPECTRON BROADCAST AUTHORITY is a fiction. There is no Authority,
+  no Licensing Division, no channel of record &mdash; only an <b>INSPECTRON 34</b>:
+  a small CRT-television-shaped Simple Add-On (SAO) built for <b>DEF CON 34</b>.
+  It plays meme GIFs as TV channels, and it hides this game &mdash; the case files
+  on this site declassify frequencies you dial on the set itself.
+  <em>Tune your own signal.</em></p>
+  <p>Designed, fabricated, and programmed by <b>@d4rkwyng</b> &mdash; a
+  <a href="https://mindtricks.io" target="_blank" rel="noopener">MINDTRICKS.IO</a>
+  production.</p>
+  <p class="transcript">Find the operator:
+  <a href="https://x.com/d4rkwyng" target="_blank" rel="noopener">x.com/@d4rkwyng</a>
+  &middot; <a href="https://mindtricks.io" target="_blank" rel="noopener">mindtricks.io</a></p>
+  <hr class="rule">
+  <p class="smallprint">All exhibits are original pastiches and all broadcasts
+  are parody; no affiliation with any actual broadcaster, agency, or the
+  programs referenced in the case files. VOID WHERE SIGNAL PROHIBITED.</p>
+  <p class="backlink"><a href="index.html">&#9664; Return to the case index</a></p>
+</div>
+<footer>
+  <p class="smallprint">INSPECTRON BROADCAST AUTHORITY &middot; VOID WHERE SIGNAL PROHIBITED</p>
+  <p class="smallprint">A SIGNAL FROM <a href="https://mindtricks.io" target="_blank" rel="noopener">MINDTRICKS.IO</a> &middot; <a href="https://x.com/d4rkwyng" target="_blank" rel="noopener">@D4RKWYNG</a></p>
+</footer>
+</div>
+</body>
+</html>
