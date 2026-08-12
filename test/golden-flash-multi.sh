@@ -6,7 +6,7 @@ LOG=/tmp/inspectron-factory.log
 exec > >(tee -a "$LOG") 2>&1
 echo "[$(date +%H:%M:%S)] ── golden-flash-multi ──"
 S="$HOME/Downloads"
-IMG="$S/golden-inspectron34-v4.uf2"
+IMG="$S/golden-inspectron34-v5.uf2"
 
 # discover bus/address pairs for every RP2 Boot device via ioreg
 PAIRS=$(python3 - <<'PY'

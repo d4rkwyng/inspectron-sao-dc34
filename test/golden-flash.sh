@@ -6,7 +6,7 @@ set -uo pipefail
 LOG=/tmp/inspectron-factory.log
 exec > >(tee -a "$LOG") 2>&1
 echo "[$(date +%H:%M:%S)] ── golden-flash ──"
-IMG="${IMG:-$HOME/Downloads/golden-inspectron34-v4.uf2}"
+IMG="${IMG:-$HOME/Downloads/golden-inspectron34-v5.uf2}"
 [ -f "$IMG" ] || { echo "!! image not found: $IMG — download the v4 golden from inspectron34.com or the GitHub release (or set IMG=/path)"; exit 1; }
 for i in 1 2 3 4 5; do
   if ioreg -p IOUSB -w0 2>/dev/null | grep -q "RP2 Boot"; then

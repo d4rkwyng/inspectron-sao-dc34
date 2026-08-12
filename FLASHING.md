@@ -12,7 +12,7 @@ bootloader is permanent; worst case you re-do these steps.
 Restores EVERYTHING: firmware, all channel packs, factory-fresh state
 (unlock progress and settings are wiped — it's a full-flash image).
 
-1. Download the current golden image, `golden-inspectron34-v4.zip`
+1. Download the current golden image, `golden-inspectron34-v5.zip`
    (unzip → the `.uf2`), from [inspectron34.com](https://inspectron34.com)
    or this repo's **[Releases](../../releases)** page
 2. **Hold the BOOT button** (back of the board) while plugging into USB —
@@ -24,13 +24,9 @@ If `RPI-RP2` never mounts (a few boards have shy USB mass-storage), use
 [picotool](https://github.com/raspberrypi/picotool):
 
 ```bash
-picotool load -v golden-inspectron34-v4.uf2
+picotool load -v golden-inspectron34-v5.uf2
 picotool reboot
 ```
-
-> **V5 is the current release** (con units shipped with V4). After any
-> golden restore, bring the board current with the update in path 2 —
-> the blessed `.mpy` set in `firmware/dist/mpy/` is V5.
 
 Repo scripts do the same with retries: `bash test/golden-flash.sh`
 (expects the image at `~/Downloads/`, or set `IMG=/path`), or

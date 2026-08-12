@@ -47,8 +47,8 @@ and the code itself (source of truth for behavior).
   register), plus heap/menu fixes from a line-by-line pre-release code crawl.
   Settings block bumped to v4 (+theme byte; unlocks untouched). Dead
   `secret/innout.gif` dropped (+554KB flash headroom). Blessed V5
-  `.mpy` set + splash variants in `firmware/`; a v5 golden image is
-  still to be captured from a blessed board (see FLASHING.md).
+  `.mpy` set + splash variants in `firmware/`; golden-inspectron34-v5
+  captured Aug 11 from a blessed board (see FLASHING.md).
 
 ## Where things live
 
