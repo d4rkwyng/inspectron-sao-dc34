@@ -58,7 +58,7 @@ def set_theme(i):
 
 def init(display):
     # display handle only — FB stays lazy, and noise tiles are NOT built
-    # here anymore: carve()/release() free them during playback (they're the
+    # here anymore: release() frees them during playback (they're the
     # 13KB that decides whether a gif opens), so building them eagerly at
     # boot was pure churn — freed unused before the first frame. They lazily
     # rebuild (~100ms) at the first static transition, which happens before
@@ -66,19 +66,15 @@ def init(display):
     global _disp; _disp=display
     gc.collect()
 def release():                     # free the UI buffer so a GIF frame can allocate
-    global FB, _slack, _noise; FB=None; _slack=None; _noise=None
-    drop_cache()                   # strips + noise tiles are dead weight
-    gc.collect()                   # during playback; tiles lazily rebuild
-                                   # (~100ms) at the next static transition
-def carve():
-    # Free EVERYTHING nonessential before an OnDiskGif — measured on the
+    # Frees EVERYTHING nonessential before an OnDiskGif — measured on the
     # rig (Jul 24): the decoder needs 88,344B (64320 bitmap + 24024 LZW
     # workspace) and the heap had only 79,872 free with the tiles resident.
     # The ~13KB of noise tiles are the difference between every gif open
     # failing and all of them working; they lazily rebuild on next snow().
     global FB, _slack, _noise; FB=None; _slack=None; _noise=None
-    drop_cache()
-    gc.collect()
+    drop_cache()                   # strips + noise tiles are dead weight
+    gc.collect()                   # during playback; tiles lazily rebuild
+                                   # (~100ms) at the next static transition
 def reclaim():                     # re-acquire the pinned UI buffer after a GIF
     # TOTAL FUNCTION: must NEVER raise. Every draw op below no-ops when FB is
     # None, so a momentary starvation just skips a frame — the next reclaim
