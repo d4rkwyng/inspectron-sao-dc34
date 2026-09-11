@@ -22,11 +22,6 @@ _BROWSER_DELAY = 0.10    # ...are treated as this (web-authoring convention)
 _HW_MIN_FRAME = 0.055    # RP2040 decode+SPI floor per full frame
 
 
-def _rgb888_to_rgb565_swapped(r, g, b):
-    v = ((r >> 3) << 11) | ((g >> 2) << 5) | (b >> 3)
-    return ((v & 0xFF) << 8) | ((v >> 8) & 0xFF)
-
-
 class OnDiskGif:
     def __init__(self, file):
         path = simcore.resolve_path(file)
