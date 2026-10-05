@@ -9,9 +9,14 @@ to a pygame window at 4x scale (960x540, title "INSPECTRON 34 SIM").
 ## Setup
 
 ```sh
-python3 -m venv sim/.venv
-sim/.venv/bin/pip install pygame pillow
+python3.13 -m venv sim/.venv
+sim/.venv/bin/pip install -r sim/requirements.txt
 ```
+
+Use Python 3.9-3.13, not 3.14 — see the note at the top of
+`sim/requirements.txt`: pygame 2.6.1 (latest release as of 2026-10-05) has an
+upstream circular-import bug that breaks `pygame.font` under 3.14, which
+takes out all on-screen text and the headless `--selftest`.
 
 ## Run
 

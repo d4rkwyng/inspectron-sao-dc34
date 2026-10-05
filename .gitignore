@@ -10,7 +10,7 @@ hardware/erc.txt
 hardware/dc34-sao-backups/
 fp-info-cache
 
-# python virtualenv (disposable — recreate via: python3 -m venv sim/.venv && sim/.venv/bin/pip install -r sim/requirements.txt)
+# python virtualenv (disposable — recreate via: python3.13 -m venv sim/.venv && sim/.venv/bin/pip install -r sim/requirements.txt; see sim/requirements.txt for why not 3.14)
 sim/.venv/
 # sim runtime state (emulated NVM)
 sim/nvm.bin

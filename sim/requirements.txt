@@ -1,6 +1,16 @@
 # Desktop simulator deps (runs firmware/code.py unmodified via sim/stubs).
-# Recreate: python3 -m venv sim/.venv && sim/.venv/bin/pip install -r sim/requirements.txt
-numpy==2.0.2
+# Recreate: python3.13 -m venv sim/.venv && sim/.venv/bin/pip install -r sim/requirements.txt
+#
+# Needs Python 3.9-3.13. pygame 2.6.1 (latest on PyPI as of 2026-10-05) has a
+# circular-import bug under Python 3.14: pygame/font.py imports
+# pygame/sysfont.py, which imports Font back from pygame.font before font.py
+# has finished defining it, so `pygame.font.init()` raises
+# "ImportError: cannot import name 'Font' from partially initialized module
+# 'pygame.font'" -- confirmed by direct reproduction, not a local misconfig.
+# This breaks the sim's on-screen text (MASTER CONTROL menu, tuner, HUD) and
+# the headless --selftest boot-smoke check. Use `python3.13 -m venv sim/.venv`
+# (or any 3.9-3.13 interpreter) until pygame ships a 3.14-compatible release.
+numpy==2.2.6
 pillow==11.3.0
 pygame==2.6.1
 

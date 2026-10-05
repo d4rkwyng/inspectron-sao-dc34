@@ -97,8 +97,8 @@ golden image, firmware-only updates, and building from source.
 ## Building / running
 
 ```bash
-# simulator (no hardware needed)
-python3 -m venv sim/.venv && sim/.venv/bin/pip install -r sim/requirements.txt
+# simulator (no hardware needed) -- Python 3.9-3.13, see sim/requirements.txt
+python3.13 -m venv sim/.venv && sim/.venv/bin/pip install -r sim/requirements.txt
 sim/.venv/bin/python sim/run.py
 
 # quality gate (lint + unit tests + boot smoke + answer-leak check + memory budget)
