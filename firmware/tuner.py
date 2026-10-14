@@ -71,8 +71,8 @@ def _fnv(s):
 MAGIC = b"IN34"
 VERSION = 8                             # v8: 3 software-culture channels
 BUILD = 5                               # v5: UNLOCK ALL settings row
-                                        # firmware build tag, shown in ABOUT as
-                                        # "FW V8.4". Free to bump per release —
+                                        # build tag, MASTER CONTROL status line:
+                                        # "FW V5". Free to bump per release —
                                         # unlike VERSION it is NOT in the NVM
                                         # header, so bumping it never wipes
                                         # player unlock progress.

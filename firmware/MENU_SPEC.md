@@ -74,7 +74,7 @@ discipline; the scaffold enforces it). Timeouts are the strand-guard.
 
 ## 2. ASCII MOCKUPS (240x134, all strings within the real font charset)
 
-**MASTER CONTROL** — opaque NAVY "bureau paperwork" fill (not snow); title AMBER scale 2; rows scale 2 at 18px pitch; highlight = full-width AMBER fillrect with NAVY text (Trinitron inverse bar — the font has no `>` glyph); status line scale 1: `LINK NO CARRIER` GREY flips live to `LINK UP` GREEN when BADGE_SLOT is set; `FW V6` from tuner.VERSION.
+**MASTER CONTROL** — opaque NAVY "bureau paperwork" fill (not snow); title AMBER scale 2; rows scale 2 at 18px pitch; highlight = full-width AMBER fillrect with NAVY text (Trinitron inverse bar — the font has no `>` glyph); status line scale 1: `LINK NO CARRIER` GREY flips live to `LINK UP` GREEN when BADGE_SLOT is set; `FW V6` from tuner.VERSION. *(As built: `FW V<n>` from `tuner.BUILD`, not VERSION — VERSION is the NVM unlock-table rev; see ui.py.)*
 
 ```
 +--------------------------------------+

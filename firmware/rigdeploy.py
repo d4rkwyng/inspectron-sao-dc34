@@ -11,7 +11,7 @@ verifies length + checksum + a marker read from the DEVICE's own
 filesystem. Trust device-side reads only.
 
 Usage:
-    python3 firmware/rigdeploy.py                 # build + deploy the four
+    python3 firmware/rigdeploy.py                 # build + deploy all five
                                                   # firmware modules
     python3 firmware/rigdeploy.py ui              # just one module
     python3 firmware/rigdeploy.py --no-reset      # skip the final reset
@@ -167,7 +167,7 @@ def deploy(rig, name, data):
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("modules", nargs="*", default=list(MODULES),
-                    help="modules to deploy (default: all four)")
+                    help="modules to deploy (default: all five)")
     ap.add_argument("--no-reset", action="store_true")
     args = ap.parse_args()
     names = args.modules or list(MODULES)

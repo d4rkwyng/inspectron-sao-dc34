@@ -26,7 +26,8 @@ i.e. CIRCUITPY drive NOT mounted, or bootstrapped per rigdeploy's hint):
     python3 firmware/deploy_production.py --no-reset
 
 Requires mpy-cross matching CircuitPython 10.2.1 on PATH or at MPY_CROSS
-(rigdeploy auto-fetches it). Copy the CircuitPython 10.x UF2 + the 10.x
+(the factory scripts use firmware/.tools/mpy-cross-10.2.1;
+nothing auto-fetches it). Copy the CircuitPython 10.x UF2 + the 10.x
 adafruit_st7789.mpy into /lib + the GIF packs BEFORE running this.
 """
 
