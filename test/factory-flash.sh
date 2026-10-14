@@ -49,7 +49,7 @@ for i in $(seq 90); do [ -d /Volumes/CIRCUITPY ] && break; sleep 1; done
 echo "=== 3/4 payload + firmware (one pass) ==="
 mkdir -p /Volumes/CIRCUITPY/lib /Volumes/CIRCUITPY/memes /Volumes/CIRCUITPY/secret
 cp "$ST7789" /Volumes/CIRCUITPY/lib/adafruit_st7789.mpy
-cp firmware/splash.gif /Volumes/CIRCUITPY/
+cp firmware/splash.gif firmware/splash-dc34.gif firmware/splash-inv.gif /Volumes/CIRCUITPY/
 cp firmware/dist/mpy/*.mpy /Volumes/CIRCUITPY/
 printf 'import app\n' > /Volumes/CIRCUITPY/code.py
 cp memes/*.gif /Volumes/CIRCUITPY/memes/

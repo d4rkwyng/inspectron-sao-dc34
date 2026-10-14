@@ -68,7 +68,7 @@ done
 #      pin-compatible) from circuitpython.org/board/vcc_gnd_yd_rp2040/
 #      via RPI-RP2 — save as ~/Downloads/cp-yd16.uf2 for the script
 #    - copy firmware/dist/lib/adafruit_st7789.mpy -> /lib
-#    - copy memes/ + secret/ + firmware/splash.gif -> drive
+#    - copy memes/ + secret/ + firmware/splash*.gif (all 3) -> drive
 #    - copy dist/mpy/*.mpy -> drive root, write code.py = "import app"
 bash test/factory-flash.sh   # does all of the provisioning automatically
 ```

@@ -19,7 +19,7 @@ df -h /Volumes/CIRCUITPY | tail -1 | awk '{print "partition:", $2, "(want ~15M)"
 
 mkdir -p /Volumes/CIRCUITPY/lib /Volumes/CIRCUITPY/memes /Volumes/CIRCUITPY/secret
 cp "$ST7789" /Volumes/CIRCUITPY/lib/adafruit_st7789.mpy && echo "lib ok"
-cp firmware/splash.gif /Volumes/CIRCUITPY/ && echo "splash ok"
+cp firmware/splash.gif firmware/splash-dc34.gif firmware/splash-inv.gif /Volumes/CIRCUITPY/ && echo "splash ok (+2 theme variants)"
 cp memes/*.gif /Volumes/CIRCUITPY/memes/ && echo "memes done ($(ls /Volumes/CIRCUITPY/memes/*.gif | wc -l | xargs))"
 cp secret/*.gif /Volumes/CIRCUITPY/secret/ && echo "secret done ($(ls /Volumes/CIRCUITPY/secret/*.gif | wc -l | xargs))"
 dot_clean -m /Volumes/CIRCUITPY 2>/dev/null || true
