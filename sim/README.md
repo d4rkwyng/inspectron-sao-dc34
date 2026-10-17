@@ -24,10 +24,12 @@ takes out all on-screen text and the headless `--selftest`.
 sim/.venv/bin/python sim/run.py
 ```
 
-The on-device paths are remapped: `/memes` -> `sim/memes/`, `/secret` ->
-`sim/secret/`. If either is empty, tiny test GIFs are generated
-automatically (`sim/make_test_gifs.py`). Drop your own GIFs in — 240x135
-or smaller.
+The on-device paths are remapped: `/memes` and `/secret` resolve to the
+repo's real channel packs (`memes/`, `secret/`) when those hold GIFs, else
+to `sim/memes/` and `sim/secret/`; `INSPECTRON_SIM_TESTGIFS=1` forces the
+`sim/` copies. If the chosen dirs are empty, tiny test GIFs are generated
+automatically (`sim/make_test_gifs.py`). Drop-in GIFs should be what the
+device plays: 134x240 portrait, as produced by `firmware/convert.py`.
 
 ## Key bindings
 
@@ -35,14 +37,20 @@ or smaller.
 |------------------|-----------------|---------------------------------------|
 | LEFT arrow       | CH_DOWN (GP12)  | previous channel (static transition)  |
 | RIGHT arrow      | CH_UP (GP13)    | next channel (static transition)      |
-| M or DOWN arrow  | MODE (GP14)     | short press: brightness cycle; hold 1s: standby toggle |
-| LEFT + RIGHT held ~0.7s | CH- & CH+ | FREQUENCY TUNER (again to back out)  |
+| M or DOWN arrow  | MODE (GP14)     | short press: brightness cycle; hold 1s: MASTER CONTROL menu |
+| LEFT + RIGHT held ~0.7s | CH- & CH+ | MASTER CONTROL menu (in a sub-screen: back one level) |
+| RIGHT held 2.5s  | CH_UP           | auto-scan on/off                      |
+| LEFT held 2.5s   | CH_DOWN         | standby (any key wakes)               |
+| B                | —               | queue one fake badge I2C read at 0x50 (first contact unlocks BADGE LINK) |
+| T                | —               | toggle the 1:1 "actual size" inset    |
+| 1 – 6            | —               | window pixel scale                    |
 | ESC / close      | —               | quit the simulator                    |
 
-In the tuner: LEFT/RIGHT spin the current digit, M short-press hops to the
-next digit, M held 1s attempts to tune. Frequencies from
-`firmware/secrets_config.py` (088.5 / 101.1 / 108.5) unlock hidden channels;
-the konami sequence (up up down down up down mode) works too.
+The menu is described in `firmware/MENU_SPEC.md`. In the FREQ TUNER:
+LEFT/RIGHT spin the current digit, M short-press hops to the next digit,
+M held 1s attempts to tune. `firmware/secrets_config.py` holds only salted
+hashes, so the sim gives no hint what to dial; the konami sequence
+(up up down down up down mode) works too.
 
 Backlight duty-cycle changes and LED pin states (power LED GP16, antenna
 LEDs GP26/27) are printed to the console.
@@ -53,16 +61,20 @@ LEDs GP26/27) are printed to the console.
 SDL_VIDEODRIVER=dummy sim/.venv/bin/python sim/run.py --selftest
 ```
 
-Runs the firmware under a scripted key sequence — channel
-change, brightness cycle, enter the tuner, dial 088.5, tune in, play the
-unlocked secret channel — dumps every frame as `sim/out/frame_NNNN.png`,
-and exits 0. `--frames N` changes the budget. The selftest deletes
-`sim/nvm.bin` at start so runs are deterministic.
+Runs the firmware under the scripted key sequence in
+`sim/stubs/simcore.py` (`SELFTEST_SCRIPT`) — channel change, brightness
+cycle, MASTER CONTROL -> CASE FILES -> FREQ TUNER, a deliberate missed tune
+(NO SIGNAL -> the Nedry channel), then with enough frames TV GUIDE watch
+and a SETTINGS round trip — dumps every frame as `sim/out/frame_NNNN.png`,
+and exits 0. `--frames N` changes the budget (default 1700; the quality
+gate runs 400). The selftest deletes `sim/nvm.bin` at start so runs are
+deterministic.
 
 ## Notes / limitations
 
-- `i2ctarget` always reports no badge traffic (`request()` returns `None`),
-  so the "badge" event path never fires in the sim.
+- `i2ctarget` reports no badge traffic unless you press B, which queues one
+  read request at 0x50; there is no way to inject badge command writes
+  (0xF0-0xF5), and the boot-time host-badge probe always sees no badge.
 - `microcontroller.nvm` is a 4096-byte array persisted to `sim/nvm.bin`
   (saved at exit) — tuner unlocks survive interactive restarts, exactly
   like the real nvm behavior.

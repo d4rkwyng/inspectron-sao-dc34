@@ -1,7 +1,7 @@
 # INSPECTRON 34 — menu specification
 #
 # ⚠ STATUS (Aug 4): DESIGN-INTENT DOCUMENT. The implementation has moved on
-# in places — settings block is ver 0x02 (not 0x01), SPEED and STATIC WIPE
+# in places — settings block is ver 0x04 (not 0x01), SPEED and STATIC WIPE
 # rows were REMOVED, TV SCROLL and standby-default 30M were added, the root
 # menu gained an ABOUT row. Where this file and the code disagree, THE CODE
 # IS THE CONTRACT (ui.py/tuner.py/code.py); this file explains the why.

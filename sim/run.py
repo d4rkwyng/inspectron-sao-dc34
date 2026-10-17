@@ -10,8 +10,8 @@ Usage:
     python3 sim/run.py --selftest           # headless scripted run -> sim/out/
     python3 sim/run.py --selftest --frames 300
 
-Keys: LEFT = CH_DOWN, RIGHT = CH_UP, M or DOWN = MODE (hold 1s = standby),
-ESC or close window = quit.
+Keys: LEFT = CH_DOWN, RIGHT = CH_UP, M or DOWN = MODE (hold 1s = MASTER
+CONTROL), B = fake badge I2C read, ESC or close window = quit (sim/README.md).
 """
 
 import argparse

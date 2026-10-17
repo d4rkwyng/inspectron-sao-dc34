@@ -46,19 +46,27 @@ Write `[register]` or `[register, value]`:
 Commands queue and are consumed by the main loop between GIF frames —
 expect them to land within ~100ms during normal TV playback. While the
 operator is in a menu screen or the set is in standby, screen-affecting
-commands (0xF0/0xF1/0xF2/0xF4) are ignored rather than queued for later;
-0xF3 and 0xF5 work in every state. Be a polite bus citizen: the badge's
+commands (0xF0/0xF1/0xF2/0xF4) are ignored rather than queued for later.
+0xF3 and 0xF5 act immediately during playback and in menus; in standby
+they are held (the queue keeps the first 8 commands and drops the rest)
+and applied on wake — queued blips collapse to one, and the last queued
+0xF5 wins. Be a polite bus citizen: the badge's
 own peripherals (0x3C, 0x19 on the DC34 badge) share this bus.
 
 ## GPIO lines
 
-SAO GPIO1/GPIO2 carry the antenna-tip LEDs (red, 470R series, LED to GND).
-Drive a line high (3.0V) and the corresponding antenna lights — no
-firmware handshake needed. The INSPECTRON keeps these pins as inputs
-except during its own brief animation blips (drive-high-then-release,
-≤40ms), so a badge PWM-ing them for effects will win the line most of
-the time. WS2812-style data blasted at GPIO1 (badge.team convention)
-just makes the antenna flicker — harmless, arguably festive.
+SAO GPIO1/GPIO2 carry the antenna-tip LEDs (red, 470R series, LED to GND)
+and are wired straight to RP2040 GP26/GP27.
+
+**Since firmware V4 the INSPECTRON actively drives both lines at all
+times** (PWM outputs: held low when the ANT LED mode is OFF, high when ON,
+animated for FLASH/PULSE and for its own channel-change blips). This was
+deliberate: the official DC34 badge sources current into the SAO GPIOs,
+which half-lit the antennas while the pins floated. The consequence for
+badge authors: a badge driving these lines is fighting a push-pull output,
+not lighting an idle LED — don't. To control the antennas from a badge,
+write `[0xF5, n]` (above) instead. (Firmware before V4 left the pins as
+inputs between blips, so badge-driven GPIO effects worked there.)
 
 ## Electrical notes
 

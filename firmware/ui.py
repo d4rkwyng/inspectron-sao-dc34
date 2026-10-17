@@ -15,9 +15,9 @@
 # run_tuner():    the NNN.N dial. CH+/- spin digit (hold = auto-repeat),
 #                 MODE short = next digit, MODE hold = tune.
 #                 Returns: unlocked gif path | ("trap", path) | ("knock", freq)
-#                 | "miss" | None (backed out). Same contract code.py handled
-#                 on the displayio build. NO idle timeout (players read the
-#                 puzzle site mid-dial).
+#                 | "miss" | None (backed out / idle). Same contract code.py
+#                 handled on the displayio build. Idle cap: a generous 180s
+#                 _TUNER_IDLE_S (players read the puzzle site mid-dial).
 
 import time
 

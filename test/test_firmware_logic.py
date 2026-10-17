@@ -186,3 +186,72 @@ def test_shipped_secrets_config_consistent():
              + [sc.KONAMI_GIF, sc.BADGE_GIF])
     missing = [p for p in paths if not (root / p.lstrip("/")).is_file()]
     assert not missing, missing
+
+
+# --- NVM block independence: the two blocks version separately ------------
+def test_unlock_version_bump_keeps_settings(fake_secrets):
+    # tuner.py: "settings churn must never wipe player progress, nor a
+    # VERSION bump wipe settings". A stale unlock header reinitializes the
+    # unlock block only.
+    s = tuner.settings_load()
+    s.update(bright_idx=2, theme=1, boot_hi=3, boot_lo=40)
+    tuner.settings_save(s)
+    assert tuner._unlock_freq("345.6")
+    tuner._ram_flags[:] = bytes(tuner.MAX_SLOTS)   # drop the session mirror
+    tuner._ram_chans.clear()
+    tuner._NVM[len(tuner.MAGIC)] = tuner.VERSION - 1   # older firmware's block
+    assert tuner.unlocked_paths() == []            # unlock block reinitialized
+    assert tuner.channel_of("/secret/t1.gif") is None
+    assert tuner.settings_load() == s              # settings untouched
+
+
+def test_settings_version_bump_keeps_unlocks(fake_secrets):
+    tuner._unlock_freq("345.6")
+    tuner.settings_save(dict(tuner.settings_load(), bright_idx=2))
+    tuner._NVM[tuner._SET_OFF + 1] = tuner._SET_VER - 1   # stale settings ver
+    assert tuner.settings_load() == dict(zip(tuner._SET_KEYS,
+                                             tuner.SETTINGS_DEFAULTS))
+    tuner._ram_flags[:] = bytes(tuner.MAX_SLOTS)
+    tuner._ram_chans.clear()
+    assert tuner.unlocked_paths() == ["/secret/t1.gif"]
+    assert tuner.channel_of("/secret/t1.gif") == "345.6"
+
+
+# --- knock: progress on one sequence is not a miss for another ------------
+def test_knock_advancing_one_sequence_spares_the_other(fake_secrets,
+                                                       monkeypatch):
+    a = tuple(tuner._fnv(f) for f in ("003.0", "006.0", "678.9"))
+    b = tuple(tuner._fnv(f) for f in ("010.0", "020.0", "030.0"))
+    monkeypatch.setattr(tuner, "KNOCKS", (a, b))
+    monkeypatch.setattr(tuner, "_knock_prog", [0, 0])
+    monkeypatch.setattr(tuner, "_knock_miss", [0, 0])
+    assert tuner.knock_visit("3.0") == "step"      # A at 1
+    # B steps (more than _KNOCK_MISS_MAX of them) must not age A out
+    for f in ("10.0", "20.0", "10.0", "20.0"):
+        assert tuner.knock_visit(f) == "step"
+    assert tuner._knock_prog[0] == 1
+    assert tuner.knock_visit("6.0") == "step"
+    assert tuner._knock_event("678.9") == "/secret/t2.gif"
+
+
+# --- settings rows <-> NVM clamp table ------------------------------------
+def test_settings_rows_match_nvm_clamps():
+    # a value the menu can cycle to must survive settings_load's clamp, and
+    # the clamp must not admit an index the row has no label for (adding
+    # ANT PULSE needed both sides bumped together)
+    import ui
+    for _label, opts, key in ui._SET_ROWS:
+        if opts:
+            idx = tuner._SET_KEYS.index(key)
+            assert len(opts) == tuner._SET_MAX[idx] + 1, key
+
+
+# --- the shipped knock table is reachable from the tuner ------------------
+def test_shipped_knock_steps_not_shadowed():
+    # run_tuner checks FREQS, then TRAP_FREQS, and only then _knock_event:
+    # an intermediate knock step that is also a FREQS/TRAP hash could never
+    # be dialed as a step. Hash-level only, no frequencies revealed.
+    import secrets_config as sc
+    for seq in sc.KNOCKS:
+        for h in seq[:-1]:
+            assert h not in sc.FREQS and h not in sc.TRAP_FREQS

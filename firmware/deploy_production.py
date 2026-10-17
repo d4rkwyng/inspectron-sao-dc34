@@ -181,6 +181,8 @@ def main():
         rig.send('import microcontroller')
         rig.send('microcontroller.reset()')
         print("reset sent — board is rebooting into the production build")
+    if not (ok_lib and ok_abi and ok_dev and ok_mem and ok_sec):
+        sys.exit(1)     # a failed pre-flight must not read as success
 
 
 if __name__ == "__main__":

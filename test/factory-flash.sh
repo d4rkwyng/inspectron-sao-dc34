@@ -60,4 +60,4 @@ echo "copied: $(ls /Volumes/CIRCUITPY/memes/*.gif | wc -l | xargs) memes, $(ls /
 diskutil unmount CIRCUITPY | tail -1
 
 echo "=== 4/4 byte-verify (remount, no replug) ==="
-python3 test/verify-board.py "board"
+ST7789="$ST7789" python3 test/verify-board.py "board"

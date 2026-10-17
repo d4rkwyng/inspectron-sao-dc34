@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Post-copy byte-verify: remount CIRCUITPY (a clean unmount already flushed
 to the device, so a fresh mount re-reads genuine flash) and byte-compare the
-staged firmware + stub + counts. No serial, no replug.
+staged firmware + st7789 lib + splash GIFs + stub + counts. No serial, no
+replug. ST7789=/path overrides the lib to compare against (as in
+factory-flash.sh).
 Usage: python3 test/verify-board.py [board-label]"""
 import os, sys, time, subprocess, filecmp
 label = sys.argv[1] if len(sys.argv) > 1 else "board"
@@ -16,6 +18,18 @@ ok = True
 for name in ("app.mpy","ui.mpy","tuner.mpy","fbdraw.mpy","secrets_config.mpy"):
     same = filecmp.cmp("firmware/dist/mpy/"+name, "/Volumes/CIRCUITPY/"+name, shallow=False)
     print("  [%s] %-18s %s" % (label, name, "OK" if same else "BYTE MISMATCH")); ok &= same
+# a page-cache-faked lib write black-screens the board at boot (RuntimeError
+# from code.py's import guard); a faked splash just loses the boot ident
+lib_src = os.environ.get("ST7789", "firmware/dist/lib/adafruit_st7789.mpy")
+for src, dst in ((lib_src, "lib/adafruit_st7789.mpy"),
+                 ("firmware/splash.gif", "splash.gif"),
+                 ("firmware/splash-dc34.gif", "splash-dc34.gif"),
+                 ("firmware/splash-inv.gif", "splash-inv.gif")):
+    try:
+        same = filecmp.cmp(src, "/Volumes/CIRCUITPY/" + dst, shallow=False)
+    except OSError:
+        same = False
+    print("  [%s] %-18s %s" % (label, dst, "OK" if same else "MISSING/MISMATCH")); ok &= same
 stub = open("/Volumes/CIRCUITPY/code.py").read().strip() == "import app"
 print("  [%s] code.py stub     %s" % (label, "OK" if stub else "WRONG")); ok &= stub
 m = len([f for f in os.listdir("/Volumes/CIRCUITPY/memes") if f.endswith(".gif") and not f.startswith("._")])

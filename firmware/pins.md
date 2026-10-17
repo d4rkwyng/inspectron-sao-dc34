@@ -45,8 +45,10 @@ designed to wear on the RIGHT badge port: max 21mm of board extends inboard
 TFT panel: Newvisio N114-2413THBIG01-H13 (LCSC C2890618), 13-pin 0.7mm
 solder-tab FPC, folded under the panel; pin 1 = TOP pad of the column (verified against the N114 mech drawing: landscape-tail-right + fold-under puts panel pin 1 at the top; silk "1" marks it)
 
-Badge interactivity: antenna-tip LEDs hang on SAO GPIO1/GPIO2 — any badge
-that pulses its SAO GPIOs (DC32-style demos) lights the antennas with no
-firmware involvement. Firmware also serves a badge.team-style descriptor
+Badge interactivity: antenna-tip LEDs hang on SAO GPIO1/GPIO2. Firmware
+V4+ actively drives GP26/GP27 at all times (PWM; see `INTERFACING.md` →
+GPIO lines), so a badge pulsing its SAO GPIOs now contends with the RP2040
+rather than lighting the antennas on its own — badges set the ANT mode
+over I2C (0xF5) instead. Firmware also serves a badge.team-style descriptor
 ("LIFE" magic) as an emulated EEPROM on I2C 0x50, and reacts to any badge
 I2C contact with an antenna blip + TV-static burst.

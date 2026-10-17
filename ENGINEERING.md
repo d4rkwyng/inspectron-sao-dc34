@@ -35,10 +35,13 @@ board's `(setup` section so renders show matte black; regeneration loses it.
 - **Badge interactivity**: antenna-tip LEDs (0402) on SAO_GPIO1/2 via 470R
   (R12/R13). CORRECTED (Jul 17, verified from DC32 firmware source): official
   badges have historically NOT driven SAO GPIOs — our firmware owns the
-  antenna show (blips on channel change/badge contact); any badge that does
-  drive the pins lights them as a bonus. Firmware serves a badge.team
+  antenna show (blips on channel change/badge contact). Since firmware V4
+  the RP2040 actively drives both lines (PWM, low when OFF) to stop the
+  official badge's sourced current half-lighting floating tips, so a badge
+  driving these pins contends with us — see firmware/INTERFACING.md.
+  Firmware serves a badge.team
   v4.2terbo descriptor at **I2C 0x50** ("LIFE" + "INSPECTRON34"), byte-
-  verified against the spec, plus command registers 0xF0-0xF4 (see
+  verified against the spec, plus command registers 0xF0-0xF5 (see
   firmware/INTERFACING.md) and a badge-contact channel unlock.
 - **Power path**: AO3401A P-FET mux — badge 3.0V has no diode drop; USB 5V →
   ME6211C33 LDO → B5819W → VDD ≈ 3.0V (so USB_VDD runs ~0.1V below the
