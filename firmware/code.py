@@ -1116,6 +1116,10 @@ def main():
                 break
     standby = False
     knocked_idx = None      # channel index already knock-registered this stay
+    pending = None          # an event the EAS/trap sub-players returned that
+                            # they don't handle themselves (konami, menu,
+                            # standby, scan, badge...) — dispatched next loop
+                            # instead of silently dropped
 
     if ON_BADGE:            # v4.3: we detected the HOST badge's bus at boot
         ant_blip(2)         # (the official badge never reads us — see the
@@ -1144,10 +1148,13 @@ def main():
                     SETTINGS["boot_hi"] = _bn // 10
                     SETTINGS["boot_lo"] = (_bn % 10) * 10
                     tuner.settings_save(SETTINGS)
-            event = play_gif(
-                channels[idx], controls,
-                on_dwell=None if idx == knocked_idx
-                else knock_dwell_cb(channels, channel))
+            if pending is not None:
+                event, pending = pending, None
+            else:
+                event = play_gif(
+                    channels[idx], controls,
+                    on_dwell=None if idx == knocked_idx
+                    else knock_dwell_cb(channels, channel))
 
         if isinstance(event, tuple) and event[0] == "knock":
             knocked_idx = channel % len(channels)
@@ -1302,6 +1309,9 @@ def main():
                     channel += 1
                 elif ev == "down":
                     channel -= 1
+                elif ev is not None:
+                    pending = ev           # e.g. MODE-hold menu, konami, or
+                                           # the standby timeout mid-trap
                 # a trap NEVER changes the lineup — skip the shared
                 # scan_memes() below (its ~100 string allocs shredded the
                 # contiguous hole the next decoder needs; a surf never
@@ -1346,6 +1356,8 @@ def main():
             elif ev2 == "down":
                 channel -= 1
                 knocked_idx = None
+            elif ev2 is not None:
+                pending = ev2              # konami/menu/standby/badge mid-alert
             show_static(channel_label(channels, channel))
         elif event == "badge":
             ant_blip(3)
