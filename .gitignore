@@ -23,3 +23,6 @@ hardware/.history/
 sim/out/
 firmware/.tools/
 firmware/build/
+
+# hardware/post_route.sh scratch renders (canonical renders live in design/)
+hardware/render-*.png
