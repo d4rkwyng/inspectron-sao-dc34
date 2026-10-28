@@ -1394,9 +1394,11 @@ def main():
                     microcontroller.cpu.frequency = 48_000_000   # one state
                 except Exception:          # whose whole job is saving power
                     pass
+                linked = False             # first-ever contact while parked
                 while True:
                     if poll_badge():       # keep answering the badge bus while parked
-                        tuner.unlock_badge_link()
+                        if tuner.unlock_badge_link():
+                            linked = True
                     e = keys.events.get()
                     if e and e.pressed:
                         break
@@ -1409,6 +1411,8 @@ def main():
                 controls.reset()
                 while badge_cmd_event():   # queued badge cmds must not
                     pass                   # replay as surf events on wake
+                if linked:                 # banner + rescan on wake, as
+                    pending = "badge"      # service_badge does when awake
                 fb.unblank_panel()
                 show_static()              # repaint GRAM BEFORE the light —
                 set_brightness(BRIGHTNESS_LEVELS[SETTINGS["bright_idx"]])
