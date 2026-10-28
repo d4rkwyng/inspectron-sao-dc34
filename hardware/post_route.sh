@@ -1,5 +1,9 @@
 #!/bin/bash
 # finalize (zones + stitching) -> DRC -> renders
+# HISTORICAL post-autoroute pipeline. The finalize step would add duplicate
+# zones + stitch vias to the finished hand-edited board, so gen_pcb.py now
+# refuses it (prints why, nonzero exit); the DRC + scratch renders below
+# still run. For the shipped board use export_production.sh instead.
 set -uo pipefail
 cd "$(dirname "$0")"
 PY="$HOME/Applications/KiCad/KiCad.app/Contents/Frameworks/Python.framework/Versions/3.9/bin/python3"

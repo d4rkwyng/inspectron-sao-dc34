@@ -17,9 +17,9 @@ V=$(grep -oE 'Found [0-9]+ DRC violations' "$OUT/drc.txt" | grep -oE '[0-9]+')
 U=$(grep -oE 'Found [0-9]+ unconnected' "$OUT/drc.txt" | grep -oE '[0-9]+')
 echo "DRC: $V violations, $U unconnected"
 if [ "$V" != "0" ] || [ "$U" -gt 2 ]; then
-  echo "DRC GATE FAILED (only the 2 documented U1-pad-22 items are accepted)"; exit 1
+  echo "DRC GATE FAILED (only the 2 documented U1 IOVDD items, pads 22 + 10, are accepted)"; exit 1
 fi
-echo "DRC gate passed (2 documented pad-22 exceptions)."
+echo "DRC gate passed (2 documented U1 IOVDD exceptions, pads 22 + 10)."
 
 echo "== Gerbers + drill =="
 "$KICAD_CLI" pcb export gerbers \

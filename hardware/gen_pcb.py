@@ -7,12 +7,26 @@ Run with KiCad's bundled python (needs pcbnew):
 Board: 58x42mm retro CRT TV, rabbit-ear antennas on top.
 Layers: F.Cu = GND pour (+ button trunk), B.Cu = VDD pour + signal routing.
 SAO header top-left (right-badge-port orientation, <=21mm inboard rule).
+
+HISTORICAL — the shipped dc34-sao.kicad_pcb carries hand edits made after
+generation (see ENGINEERING.md "THE most important thing"). Both modes write
+that file in place: the default mode rebuilds it from scratch, and --final
+adds a second pair of GND/VDD zones plus new stitch vias on top of the
+finished routing. So the script refuses to run while the board exists unless
+--overwrite-hand-edited-board is passed. Kept as the netlist/placement record.
 """
 
 import math
 import os
 import re
 import sys
+
+_HERE = os.path.dirname(os.path.abspath(__file__))
+if os.path.exists(os.path.join(_HERE, "dc34-sao.kicad_pcb")) and \
+        "--overwrite-hand-edited-board" not in sys.argv:
+    sys.exit("gen_pcb.py: refusing to touch dc34-sao.kicad_pcb, which has "
+             "hand edits that this script would destroy (ENGINEERING.md). "
+             "Pass --overwrite-hand-edited-board only on a scratch copy.")
 
 import wx  # noqa: F401 — pcbnew's standalone mode needs a wx App context
 _app = wx.App(redirect=False)
