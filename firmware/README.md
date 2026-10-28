@@ -34,7 +34,9 @@ Manual steps the tool assumes you did first:
    the deploy tool with `--lib`.
 3. Copy the repo's `/memes` and `/secret` folders onto the drive (GIF packs
    are too large for the serial deploy path; ~14.8 MB of the 15.7 MB
-   partition).
+   partition), plus `firmware/splash.gif`, `splash-dc34.gif` and
+   `splash-inv.gif` to the drive root (boot ident + the V5 theme variants;
+   neither deploy tool copies them).
 4. `secrets_config.py` is **generated** — regenerate via
    `python3 sitegen/gen_secrets.py`, never hand-edit; the deploy tool ships it.
 

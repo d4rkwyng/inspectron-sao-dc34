@@ -2,7 +2,7 @@
 # Contains ALL ANSWERS. sitegen/ only — never deploy, never copy to
 # the device. Regenerate: python3 sitegen/gen_secrets.py
 
-## Visible dial (37 channels — TV/movies/commercials/music video only)
+## Visible dial (38 channels — TV/movies/commercials/music video only)
 
 | CH | file | shown as | size |
 |---|---|---|---|
@@ -18,7 +18,7 @@
 | 15 | memes/nedry.gif | NEDRY | 186KB |
 | 16 | memes/itcrowd_fire.gif | IT CROWD | 300KB |
 | 17 | memes/printer.gif | PC LOAD LTR | 269KB |
-| 19 | memes/eas.gif | EAS TEST | 54KB |
+| 19 | memes/eas.gif | EAS TEST | 53KB |
 | 20 | memes/mtv.gif | MTV | 125KB |
 | 21 | memes/beavis.gif | BEAVIS | 45KB |
 | 22 | memes/fsociety.gif | FSOCIETY | 415KB |
@@ -30,6 +30,7 @@
 | 31 | memes/heman.gif | HE-MAN | 155KB |
 | 32 | memes/transformers.gif | AUTOBOTS | 100KB |
 | 33 | memes/dinosaurs.gif | DINOSAURS | 182KB |
+| 34 | memes/defcon34.gif | DEF CON 34 | 67KB |
 | 38 | memes/shamwow.gif | SHAMWOW | 174KB |
 | 39 | memes/slimjim.gif | SLIM JIM | 194KB |
 | 40 | memes/wheresthebeef.gif | WHERES BEEF | 174KB |
@@ -46,17 +47,17 @@
 
 ## Dead air (knock seats; prune when their reward unlocks)
 
-CH 11, CH 23, CH 34, CH 42, CH 66, CH 88
+CH 11, CH 23, CH 42, CH 66, CH 88
 
 ## Hidden — dial to unlock (18)
 
 | dial | file | note | size |
 |---|---|---|---|
 | 011.0 | /secret/maxheadroom.gif | CF-05 Signal Intrusion | 141KB |
-| 023.0 | /secret/testcardf.gif | CF-06 Test Card Lineage (knock) | 2KB |
-| 034.1 | /secret/ident.gif | CF-00 Sign-On | 28KB |
+| 023.0 | /secret/testcardf.gif | CF-06 Test Card Lineage (knock) | 592KB |
+| 034.1 | /secret/ident.gif | CF-00 Sign-On | 88KB |
 | 053.0 | /secret/dns.gif | insider | 263KB |
-| 066.0 | /secret/apollo.gif | CF-07 Tranquility Descent (knock) | 11KB |
+| 066.0 | /secret/apollo.gif | CF-07 Tranquility Descent (knock) | 421KB |
 | 080.0 | /secret/gadget.gif | CF-02 Know Your Set | 117KB |
 | 088.0 | /secret/keyboardcat.gif | insider | 258KB |
 | 089.0 | /secret/toasters.gif | insider | 271KB |
@@ -64,10 +65,10 @@ CH 11, CH 23, CH 34, CH 42, CH 66, CH 88
 | 098.0 | /secret/bsod.gif | insider | 106KB |
 | 123.0 | /secret/elmothunder.gif | insider | 137KB |
 | 170.4 | /secret/wopr.gif | CF-04 Only Winning Move | 10KB |
-| 199.3 | /secret/defcon1.gif | CF-01 First Transmission | 4KB |
+| 199.3 | /secret/defcon1.gif | CF-01 First Transmission | 523KB |
 | 210.1 | /secret/allyourbase.gif | insider | 570KB |
 | 222.0 | /secret/nyan.gif | insider | 81KB |
-| 400.4 | /secret/silicon.gif | CF-03 Count the Frames | 3KB |
+| 400.4 | /secret/silicon.gif | CF-03 Count the Frames | 297KB |
 | 404.0 | /secret/meeseeks.gif | CF-09 Master Control (meta) | 260KB |
 | 911.0 | /secret/this_is_fine.gif | insider | 173KB |
 
