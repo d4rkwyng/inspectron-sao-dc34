@@ -50,5 +50,7 @@ V4+ actively drives GP26/GP27 at all times (PWM; see `INTERFACING.md` →
 GPIO lines), so a badge pulsing its SAO GPIOs now contends with the RP2040
 rather than lighting the antennas on its own — badges set the ANT mode
 over I2C (0xF5) instead. Firmware also serves a badge.team-style descriptor
-("LIFE" magic) as an emulated EEPROM on I2C 0x50, and reacts to any badge
-I2C contact with an antenna blip + TV-static burst.
+("LIFE" magic) as an emulated EEPROM on I2C 0x50. The first-ever I2C
+contact unlocks BADGE LINK and shows an antenna blip + BADGE CONNECTED
+banner; later descriptor reads change nothing on screen (the static burst
+is command 0xF2 — see `INTERFACING.md`).
