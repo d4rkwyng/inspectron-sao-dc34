@@ -570,14 +570,20 @@ def service_badge(controls):
     return ev
 
 
+_ui_linked = [False]    # first-ever badge contact landed inside a menu
+
+
 def poll_ui():
     """Badge poll for menu/guide/tuner screens: badge contact must still
     unlock BADGE LINK in there (it used to silently miss), and queued
     badge up/down commands are drained so they don't replay as surf
-    events after the menu exits. Blips still blip."""
+    events after the menu exits. Blips still blip. A first contact is
+    remembered so main() shows the BADGE CONNECTED banner on UI exit
+    (unlock_badge_link() returns True only once, ever)."""
     ant_service(time.monotonic())      # FLASH mode animates in menus too
     if poll_badge():
-        tuner.unlock_badge_link()
+        if tuner.unlock_badge_link():
+            _ui_linked[0] = True
     while badge_cmd_event():
         pass
 
@@ -1278,6 +1284,7 @@ def main():
                 else:
                     break                   # exit row / BOTH / menu timeout
             controls.reset()
+            linked, _ui_linked[0] = _ui_linked[0], False
             if isinstance(unlocked, tuple) and unlocked[0] == "knock":
                 # dialed knock step: tuner showed CARRIER HELD — stay put
                 ant_blip(2)
@@ -1312,6 +1319,8 @@ def main():
                 elif ev is not None:
                     pending = ev           # e.g. MODE-hold menu, konami, or
                                            # the standby timeout mid-trap
+                if linked and pending is None:
+                    pending = "badge"      # banner + the rescan skipped below
                 # a trap NEVER changes the lineup — skip the shared
                 # scan_memes() below (its ~100 string allocs shredded the
                 # contiguous hole the next decoder needs; a surf never
@@ -1335,6 +1344,8 @@ def main():
             elif watch and watch in channels:
                 channel = channels.index(watch)
             show_static(channel_label(channels, channel))
+            if linked:                     # first contact made in a menu:
+                pending = "badge"          # banner, as service_badge does
         elif event == "konami":
             unlocked = tuner.unlock_konami()
             ant_blip(3)

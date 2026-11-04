@@ -255,3 +255,17 @@ def test_shipped_knock_steps_not_shadowed():
     for seq in sc.KNOCKS:
         for h in seq[:-1]:
             assert h not in sc.FREQS and h not in sc.TRAP_FREQS
+
+
+def test_badge_link_first_contact_reported_once(fake_secrets):
+    # code.py shows BADGE CONNECTED only when unlock_badge_link() returns
+    # True (service_badge, the standby loop, poll_ui), so it must be True on
+    # the first-ever contact and False forever after, including after a
+    # reboot (session mirror gone, flag read back from NVM)
+    assert not tuner.badge_linked()
+    assert tuner.unlock_badge_link() is True
+    assert tuner.unlock_badge_link() is False
+    tuner._ram_flags[:] = bytes(tuner.MAX_SLOTS)   # simulated reboot
+    assert tuner.badge_linked()
+    assert tuner.unlock_badge_link() is False
+    assert tuner.unlocked_paths() == ["/secret/b.gif"]
