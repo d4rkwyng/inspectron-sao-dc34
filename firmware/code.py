@@ -570,6 +570,19 @@ def service_badge(controls):
     return ev
 
 
+def badge_tick(controls):
+    """Playback-loop badge poll: serve any pending request and return its
+    event or None. Guarded: a badge poke must never bubble into the
+    top-level reload guard (a 3s freeze + reboot while the badge talks).
+    play_gif, play_missing and play_dead_air all go through here."""
+    try:
+        if poll_badge():
+            return service_badge(controls)
+    except (MemoryError, OSError, ValueError, RuntimeError):
+        pass
+    return None
+
+
 _ui_linked = [False]    # first-ever badge contact landed inside a menu
 
 
@@ -819,13 +832,9 @@ def play_gif(path, controls, on_dwell=None, until_s=None):
                 event = controls()
                 if event:
                     return event
-                try:                       # a badge poke during playback must
-                    if poll_badge():       # never bubble into the reload guard
-                        ev = service_badge(controls)
-                        if ev:
-                            return ev
-                except (MemoryError, OSError, ValueError, RuntimeError):
-                    pass
+                ev = badge_tick(controls)
+                if ev:
+                    return ev
                 now = time.monotonic()
                 ant_service(now)
                 if now >= target:
@@ -866,10 +875,9 @@ def play_missing(path, controls, on_dwell=None, until_s=None):
         event = controls()
         if event:
             return event
-        if poll_badge():
-            ev = service_badge(controls)
-            if ev:
-                return ev
+        ev = badge_tick(controls)
+        if ev:
+            return ev
         if on_dwell is not None and time.monotonic() - started >= KNOCK_DWELL_S:
             r = on_dwell()
             on_dwell = None
@@ -907,10 +915,9 @@ def play_dead_air(controls, on_dwell=None):
         event = controls()
         if event:
             return event
-        if poll_badge():
-            ev = service_badge(controls)
-            if ev:
-                return ev
+        ev = badge_tick(controls)
+        if ev:
+            return ev
         if on_dwell is not None and time.monotonic() - started >= KNOCK_DWELL_S:
             r = on_dwell()
             on_dwell = None
