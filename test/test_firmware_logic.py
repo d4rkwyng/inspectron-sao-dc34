@@ -269,3 +269,49 @@ def test_badge_link_first_contact_reported_once(fake_secrets):
     assert tuner.badge_linked()
     assert tuner.unlock_badge_link() is False
     assert tuner.unlocked_paths() == ["/secret/b.gif"]
+
+
+def test_mem_budget_reads_real_fbdraw_constants(tmp_path):
+    # mem_budget.py claims it "reads the real constants out of fbdraw.py so
+    # it can't drift", but its BW/BH regex never matched fbdraw's
+    # `BW, BH = 134, 240` and silently used hardcoded defaults. Pin the
+    # parse against an independent AST read of fbdraw.py.
+    import ast
+    import pathlib
+    import subprocess
+    import sys
+    root = pathlib.Path(__file__).resolve().parents[1]
+    consts = {}
+    for node in ast.parse((root / "firmware" / "fbdraw.py").read_text()).body:
+        if isinstance(node, ast.Assign) and len(node.targets) == 1:
+            tgt = node.targets[0]
+            names = ([e.id for e in tgt.elts] if isinstance(tgt, ast.Tuple)
+                     else [getattr(tgt, "id", None)])
+            try:
+                vals = ast.literal_eval(node.value)
+            except ValueError:
+                continue                    # computed value: not a constant
+            if not isinstance(tgt, ast.Tuple):
+                vals = (vals,)
+            consts.update(zip(names, vals))
+    out = subprocess.run([sys.executable, str(root / "test" / "mem_budget.py")],
+                         capture_output=True, text=True)
+    assert out.returncode == 0, out.stdout + out.stderr
+    bw, bh = consts["BW"], consts["BH"]
+    assert "%6d B (%dx%d @16bpp)" % (bw * bh * 2, bw, bh) in out.stdout
+    assert "SLACKS reserve       %6d B" % sum(consts["SLACKS"]) in out.stdout
+    assert "text-strip cache     %6d B" % (consts["_TCACHE_MAX_PX"] * 2) \
+        in out.stdout
+    # and a changed fbdraw must change the report (no silent defaults)
+    fake = tmp_path / "fbdraw.py"
+    fake.write_text("BW, BH = 100, 200\nSLACKS = (1000, 2000)\n"
+                    "_TCACHE_MAX_PX = 500\n")
+    out = subprocess.run([sys.executable, str(root / "test" / "mem_budget.py"),
+                          str(fake)], capture_output=True, text=True)
+    assert " 40000 B (100x200 @16bpp)" in out.stdout
+    assert "SLACKS reserve         3000 B" in out.stdout
+    assert "text-strip cache       1000 B" in out.stdout
+    fake.write_text("BW = 1\n")                 # constants gone: must fail
+    out = subprocess.run([sys.executable, str(root / "test" / "mem_budget.py"),
+                          str(fake)], capture_output=True, text=True)
+    assert out.returncode != 0

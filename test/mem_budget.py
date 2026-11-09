@@ -17,21 +17,30 @@ import sys
 import pathlib
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-FB = (ROOT / "firmware" / "fbdraw.py").read_text()
+# optional argv[1]: an fbdraw.py to read instead (the drift test feeds it a
+# doctored copy to prove the constants really come from the file)
+FB = pathlib.Path(sys.argv[1] if len(sys.argv) > 1
+                  else ROOT / "firmware" / "fbdraw.py").read_text()
 
 
-def _int(name, default=None):
-    m = re.search(r"^%s\s*=\s*(\d+)" % name, FB, re.M)
-    return int(m.group(1)) if m else default
+def _need(pattern):
+    """Match a constant in fbdraw.py or exit: a silent fallback default is
+    exactly the drift this script exists to catch (BW/BH used to fall back
+    unnoticed because fbdraw declares them as `BW, BH = 134, 240`)."""
+    m = re.search(pattern, FB, re.M)
+    if not m:
+        sys.exit("mem_budget: constant not found in firmware/fbdraw.py "
+                 "(pattern %r) — update this script" % pattern)
+    return m
 
 
 # --- constants pulled from the firmware -----------------------------------
-BW = _int("BW", 134)
-BH = _int("BH", 240)
+_m = _need(r"^BW,\s*BH\s*=\s*(\d+),\s*(\d+)")
+BW, BH = int(_m.group(1)), int(_m.group(2))
 FB_BYTES = BW * BH * 2                 # 16bpp displayio.Bitmap
 # SLACKS = (32768, 24024) decoder-hole reserve
-m = re.search(r"SLACKS\s*=\s*\(([^)]*)\)", FB)
-SLACKS = tuple(int(x) for x in re.findall(r"\d+", m.group(1))) if m else (32768, 24024)
+SLACKS = tuple(int(x) for x in re.findall(
+    r"\d+", _need(r"^SLACKS\s*=\s*\(([^)]*)\)").group(1)))
 SLACK_TOTAL = sum(SLACKS)
 
 # OnDiskGif: 64,320 frame bitmap + 24,024 LZW workspace (documented in fbdraw)
@@ -39,8 +48,8 @@ GIF_BITMAP = 64320
 GIF_WORKSPACE = 24024
 GIF_TOTAL = GIF_BITMAP + GIF_WORKSPACE
 
-# text-strip cache: capped ~28KB per fbdraw v3 comments
-TEXT_CACHE = 28000
+# text-strip cache: _TCACHE_MAX_PX strip pixels at 16bpp (14000 px = 28KB)
+TEXT_CACHE = int(_need(r"^_TCACHE_MAX_PX\s*=\s*(\d+)").group(1)) * 2
 
 # RP2040 has 264KB SRAM. CircuitPython runtime (VM, heap overhead, stacks,
 # imported .mpy, displayio bus buffers) consumes a large fixed chunk; the
