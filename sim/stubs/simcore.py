@@ -67,9 +67,10 @@ SELFTEST_SCRIPT = [
     (14.4, 0, True), (14.5, 0, False),  # down x3 -> SETTINGS
     (14.7, 0, True), (14.8, 0, False),
     (15.0, 0, True), (15.1, 0, False),
-    (15.4, 2, True), (15.5, 2, False),  # open settings
-    (15.8, 2, True), (15.9, 2, False),  # cycle AUTO SCAN -> ON
-    (16.2, 2, True), (16.3, 2, False),  # -> OFF again (leave defaults)
+    (15.4, 2, True), (15.5, 2, False),  # open settings (row 0 = BRIGHTNESS)
+    (15.8, 2, True), (15.9, 2, False),  # cycle BRIGHTNESS MED -> LOW
+    (16.15, 2, True), (16.2, 2, False), # -> HIGH
+    (16.4, 2, True), (16.45, 2, False), # -> MED again (leave defaults)
     (16.6, 1, True), (16.7, 0, True),   # BOTH: save + back to menu
     (17.4, 1, False), (17.45, 0, False),
     (17.8, 1, True), (17.9, 0, True),   # BOTH again: exit to TV

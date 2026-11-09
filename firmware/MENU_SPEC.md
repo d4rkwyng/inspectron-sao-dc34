@@ -12,7 +12,7 @@
 # Settled Jul 21 2026 after a few dead-end drafts.
 # Implementation target: firmware/ui.py.
 
-Notes: the font charset is A-Z 0-9 space `. - + * / ?` only; `_NVM_LEN` = 91; the poll_badge/unlock_badge_link gap in ui screens is real (code.py:515-522).
+Notes: the font charset is A-Z 0-9 space `. - + * / ?` only; `_NVM_LEN` = 91. The poll_badge/unlock_badge_link gap in ui screens that §5 describes is FIXED: `poll_ui()` in code.py unlocks BADGE LINK from every menu screen, and a first contact made there shows BADGE CONNECTED on UI exit.
 
 # INSPECTRON 34 — FINAL MENU SPECIFICATION (rev A firmware)
 

@@ -1,7 +1,7 @@
 # DC34 Meme TV SAO — FREQUENCY TUNER + unlock persistence
-# "TUNE YOUR OWN SIGNAL": hold CH+ and CH- together during playback to open
-# the guide, MODE from there for the tuner. CH+/CH- spin the current digit
-# (hold to auto-repeat), MODE short-press hops to the next digit, MODE
+# "TUNE YOUR OWN SIGNAL": MODE hold (or CH+ & CH- held) opens MASTER CONTROL,
+# FREQ TUNER from there (ui.run_tuner draws it). CH+/CH- spin the current
+# digit (hold to auto-repeat), MODE short-press hops to the next digit, MODE
 # long-press attempts to tune. secrets_config stores FNV-1a HASHES of the
 # licensed frequencies (reading the file off the drive spoils nothing);
 # unlock bits AND the dialed channel numbers persist in microcontroller.nvm
@@ -10,10 +10,9 @@
 # frequencies, same NNN.N namespace) acknowledged per-step with CARRIER
 # HELD; completing one grants its license.
 #
-# Pure displayio (Bitmap/Palette/TileGrid/Group) + a built-in 5x7 glyph
-# set drawn into a Bitmap: zero library deps beyond what code.py needs.
-# CircuitPython 9 compatible; degrades gracefully if /secret is missing
-# or nvm is unavailable (unlocks then last for the session only).
+# Logic + persistence only: no drawing here (ui.py + fbdraw.py render the
+# menus and dial). Degrades gracefully if /secret is missing or nvm is
+# unavailable (unlocks then last for the session only).
 
 
 
