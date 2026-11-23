@@ -2,7 +2,8 @@
 """Build the INSPECTRON BROADCAST AUTHORITY static puzzle site.
 
 Case set: "Declassify the Broadcast Authority" CF-00..CF-09 (see CASES.md —
-NEVER deploy that file). Emits site/index.html, site/puzzles/*.html,
+NEVER deploy that file). Assets (seal.webp, favicon.ico, og-share.*) come from build_assets.py.
+Emits site/index.html, site/puzzles/*.html,
 site/404.html (GitHub Pages mirror of CF-09) and site/.nojekyll.
 Fully static, self-contained, no external requests, works from file://.
 Contains NO answers (validated by check_no_answers.py)."""
@@ -22,9 +23,21 @@ PUZ = SITE / "puzzles"
 # project-pages deploy.
 PAGES_BASE = "/"
 
-FAVICON = ('data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 '
-           'viewBox=%270 0 16 16%27><text y=%2713%27 font-size=%2713%27>'
-           '&#128250;</text></svg>')
+ORIGIN = "https://inspectron34.com"
+OG_IMAGE = ORIGIN + "/assets/og-share.png"   # 1200x630, built by build_assets.py
+OG_ALT = ("Inspectron Broadcast Authority seal, a CRT television with antenna, "
+          "beside the words INSPECTRON 34 and TUNE YOUR OWN SIGNAL")
+SEAL_ALT = "Circular seal of the INSPECTRON Broadcast Authority: a CRT television with antenna"
+
+
+def seal_img(pre):
+    """Display-sized WebP (256px for the 122 CSS px slot) with PNG fallback.
+    pre = relative prefix to the site root ("" or "../")."""
+    return (f'<picture>\n'
+            f'    <source type="image/webp" srcset="{pre}assets/seal.webp">\n'
+            f'    <img class="seal" src="{pre}assets/seal.png" width="122" height="122"\n'
+            f'         alt="{SEAL_ALT}">\n'
+            f'  </picture>')
 
 
 def exhibit(page_dir_depth, name, alt, pixel=False):
@@ -88,6 +101,9 @@ body::after {
   background-image: url("NOISE_URI");
   opacity: .05; animation: snowdrift .9s steps(4) infinite;
 }
+/* After first paint a tiny inline script adds html.is-settled: the grain
+   stays (static) but the infinite full-viewport transform stops. */
+html.is-settled body::after { animation: none; }
 @keyframes snowdrift {
   0% { transform: translate(0, 0); } 25% { transform: translate(-11px, 7px); }
   50% { transform: translate(9px, -13px); } 75% { transform: translate(-6px, -5px); }
@@ -98,6 +114,14 @@ body::after {
   animation: warmup 1.1s ease-out both;
 }
 @keyframes warmup { from { opacity: 0; filter: brightness(2.4) blur(2px); } }
+.skip {
+  position: absolute; left: .6rem; top: -4rem; z-index: 20;
+  background: var(--bg); color: var(--ph); border: 2px solid var(--ph);
+  padding: .45rem .8rem; letter-spacing: .12em; text-transform: uppercase;
+  font-size: .85rem;
+}
+.skip:focus { top: .6rem; }
+main:focus { outline: none; }
 a { color: var(--ph); }
 a:hover { background: var(--ph); color: #041104; text-shadow: none; }
 h1, h2, h3 { font-weight: 700; letter-spacing: .12em; }
@@ -214,21 +238,53 @@ Authority honors <em>conduct</em>: certain licenses are granted not for what you
 dial, but for how you surf. The set is always watching.</p>"""
 
 
-def shell(title, body, desc=None):
-    meta_desc = (f'\n<meta name="description" content="{desc}">' if desc else "")
+SETTLE_JS = ("(function(){var d=document.documentElement,f=function(){"
+             "d.classList.add('is-settled')};"
+             "requestAnimationFrame(function(){requestAnimationFrame(f)})})();")
+
+
+def shell(title, body, desc, path):
+    """path = canonical clean URL path as the Worker serves it ("/", "/about",
+    "/404", "/puzzles/<slug>"). Every page gets canonical + OG + Twitter tags,
+    a skip link and a <main id="main"> landmark (everything above the footer;
+    the footer stays a sibling landmark inside .tube)."""
+    url = ORIGIN + path
+    head, sep, foot = body.rpartition("<footer>")
+    main = head if sep else body
+    foot = (sep + foot) if sep else ""
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">{meta_desc}
-<link rel="icon" href="{FAVICON}">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="{desc}">
+<link rel="canonical" href="{url}">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Inspectron Broadcast Authority">
+<meta property="og:title" content="{title}">
+<meta property="og:description" content="{desc}">
+<meta property="og:url" content="{url}">
+<meta property="og:image" content="{OG_IMAGE}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="{OG_ALT}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{title}">
+<meta name="twitter:description" content="{desc}">
+<meta name="twitter:image" content="{OG_IMAGE}">
+<meta name="twitter:image:alt" content="{OG_ALT}">
 <title>{title}</title>
 <style>{CSS}</style>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 <div class="tube">
-{body}
+<main id="main" tabindex="-1">
+{main}</main>
+{foot}
 </div>
+<script>{SETTLE_JS}</script>
 </body>
 </html>
 """
@@ -250,16 +306,23 @@ TUNING_FOOTER = f"""<footer>
 </footer>"""
 
 
+def case_desc(caseno, codename):
+    # Spoiler-free: public codename + licensing-review framing only.
+    return (f"Case File {caseno} &mdash; {codename}. A licensing review from the "
+            "Inspectron Broadcast Authority: an INSPECTRON 34 puzzle for DEF CON 34.")
+
+
 def puzzle_page(slug, caseno, codename, klass, glyph, body, title=None):
     head = f"""<header class="masthead">
-  <img class="seal" src="../assets/seal.png" alt="Circular seal of the INSPECTRON Broadcast Authority: a CRT television with antenna">
+  {seal_img("../")}
   <h1>Inspectron Broadcast Authority</h1>
   <p class="tagline">Tune Your Own Signal</p>
 </header>
 <p class="doc-head" style="border:0;margin-top:1rem"><span>Case file {caseno}</span>
 <span>Review class {klass} <span class="glyph">{glyph}</span></span></p>
 <h2>{codename}</h2>"""
-    html = shell(title or f"IBA &mdash; Case File {caseno}", head + body + TUNING_FOOTER)
+    html = shell(title or f"IBA &mdash; Case File {caseno}", head + body + TUNING_FOOTER,
+                 case_desc(caseno, codename), f"/puzzles/{slug}")
     (PUZ / f"{slug}.html").write_text(html)
     return slug
 
@@ -484,7 +547,8 @@ THE ERROR IS THE FINDING.  FILE IT.</pre>
      finding -- you know what to do with a finding. -->"""
 
 (PUZ / "master-control.html").write_text(
-    shell("IBA &mdash; FILE NOT FOUND", MC_BODY + TUNING_FOOTER))
+    shell("IBA &mdash; FILE NOT FOUND", MC_BODY + TUNING_FOOTER,
+          case_desc("09", "Master Control"), "/puzzles/master-control"))
 
 # GitHub Pages 404 mirror (root-level; self-contained, no asset refs)
 FOF_FOOTER = f"""<footer>
@@ -493,14 +557,17 @@ FOF_FOOTER = f"""<footer>
   <p class="smallprint">INSPECTRON BROADCAST AUTHORITY &middot; VOID WHERE SIGNAL PROHIBITED</p>
   {CREDIT_HTML}
 </footer>"""
-(SITE / "404.html").write_text(shell("IBA &mdash; FILE NOT FOUND", MC_BODY + FOF_FOOTER))
+(SITE / "404.html").write_text(shell(
+    "IBA &mdash; FILE NOT FOUND", MC_BODY + FOF_FOOTER,
+    "The Inspectron Broadcast Authority has no record of the page you asked for. "
+    "Return to the case index and tune your own signal.", "/404"))
 (SITE / ".nojekyll").write_text("")
 
 
 # ---------------------------------------------------------------- about
 # Colophon: breaks the fiction to credit the makers. Leak-safe (no answers).
 ABOUT_BODY = f"""<header class="masthead">
-  <img class="seal" src="assets/seal.png" alt="Circular seal of the INSPECTRON Broadcast Authority: a CRT television with antenna">
+  {seal_img("")}
   <h1>Station Registration</h1>
   <p class="tagline">Who Runs This Band</p>
 </header>
@@ -530,7 +597,7 @@ ABOUT_BODY = f"""<header class="masthead">
 </footer>"""
 (SITE / "about.html").write_text(shell(
     "IBA &mdash; Station Registration", ABOUT_BODY,
-    desc="About INSPECTRON 34 — a DEF CON 34 CRT-TV SAO and puzzle by @d4rkwyng / mindtricks.io."))
+    desc="About INSPECTRON 34 — a DEF CON 34 CRT-TV SAO and puzzle by @d4rkwyng / mindtricks.io.", path="/about"))
 
 
 # ---------------------------------------------------------------- index
@@ -545,7 +612,7 @@ for caseno, slug, codename, klass, glyph, teaser, tags in CASES:
 </a>""")
 
 index_body = f"""<header class="masthead">
-  <img class="seal" src="assets/seal.png" alt="Circular seal of the INSPECTRON Broadcast Authority: a CRT television with antenna">
+  {seal_img("")}
   <h1>Inspectron Broadcast Authority</h1>
   <p class="tagline">Tune Your Own Signal</p>
   <p class="transcript">LICENSING DIVISION &middot; PIRATE STATION AMNESTY PROGRAM &middot; SUMMER SESSION, LAS VEGAS</p>
@@ -591,7 +658,7 @@ index_body = f"""<header class="masthead">
 
 (SITE / "index.html").write_text(shell(
     "Inspectron Broadcast Authority", index_body,
-    desc="The Broadcast Authority licenses pirate stations. Complete a case file, earn a channel of record, tune your own signal. A DEF CON 34 SAO companion."))
+    desc="The Broadcast Authority licenses pirate stations. Complete a case file, earn a channel of record, tune your own signal. A DEF CON 34 SAO companion.", path="/"))
 
 print("wrote", SITE / "index.html")
 print("wrote", SITE / "404.html", "+ .nojekyll")
