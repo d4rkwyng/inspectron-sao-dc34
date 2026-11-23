@@ -28,6 +28,9 @@ TEXT_EXT = {".html", ".txt", ".css", ".js", ".svg", ".md"}
 # These are anchor links, never resource loads (src) — "no external requests"
 # in rule 3 still holds because the gate only allows them on href.
 ALLOWED_EXTERNAL = ("https://mindtricks.io", "https://x.com/d4rkwyng")
+# Same-origin canonical only: <link rel="canonical" href="https://inspectron34.com/...">.
+# Never a src, never another host, never a non-canonical <link>.
+ORIGIN = "https://inspectron34.com"
 
 # knock sequences: digits in order with any of - , > → / . or spaces between
 def knock_re(a, b, c):
@@ -77,11 +80,15 @@ class Check(HTMLParser):
     def __init__(self, path):
         super().__init__()
         self.path, self.stack, self.errs, self.refs = path, [], [], []
+        self.srcsets = []
 
     def handle_starttag(self, tag, attrs):
+        attrs_d = {k: (v or "") for k, v in attrs}
         for k, v in attrs:
             if k in ("src", "href") and v:
-                self.refs.append((k, v))
+                self.refs.append((k, v, tag, attrs_d.get("rel", "")))
+            elif k == "srcset" and v:
+                self.srcsets.append(v)
         if tag not in VOID:
             self.stack.append(tag)
 
@@ -100,8 +107,15 @@ for f in sorted(SITE.rglob("*.html")):
     c.feed(f.read_text())
     if c.stack:
         c.errs.append(f"unclosed tags: {c.stack}")
-    for attr, r in c.refs:
-        if re.match(r"^(https?:)?//", r):
+    for sset in c.srcsets:                # srcset: local files only
+        for cand in sset.split(","):
+            c.refs.append(("src", cand.split()[0], "srcset", ""))
+    for attr, r, tag, rel in c.refs:
+        rels = {part.lower() for part in (rel or "").split()}
+        if (attr == "href" and tag == "link" and "canonical" in rels
+                and (r == ORIGIN or r.startswith(ORIGIN + "/"))):
+            pass                          # canonical link only, same origin
+        elif re.match(r"^(https?:)?//", r):
             # Creator-credit links are allowed as navigation (href) only —
             # never as a resource load (src), so "no external requests" holds.
             if attr == "href" and any(r == a or r.startswith(a + "/")
@@ -112,7 +126,8 @@ for f in sorted(SITE.rglob("*.html")):
         elif r.startswith("data:") or r.startswith("#"):
             pass
         else:
-            target = (f.parent / r.split("#")[0]).resolve()
+            base = SITE if r.startswith("/") else f.parent   # "/x" = site root
+            target = (base / r.split("#")[0].lstrip("/")).resolve()
             if not target.exists():
                 c.errs.append(f"missing referenced file: {r}")
     if c.errs:
